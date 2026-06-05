@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { Link } from 'react-router-dom'
 
 // Cred — a self-contained dashboard card showing the member's current point
 // balance, lifetime earned, and recent ledger activity for the org they are
@@ -102,11 +103,13 @@ function Cred() {
           </ul>
         )}
 
-        {/* Stub for the future paged/searchable full-history view */}
         <div className="mt-4">
-          <span className="text-gray-600 text-xs tracking-wide cursor-not-allowed">
-            View full history (coming soon)
-          </span>
+          <Link
+            to="/history"
+            className="text-cyan-400/80 hover:text-cyan-400 text-xs tracking-wide transition-colors"
+          >
+            View full history &rarr;
+          </Link>
         </div>
       </div>
     </div>

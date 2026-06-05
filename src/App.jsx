@@ -2,6 +2,8 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { useState, useEffect } from 'react'
 import Login from './pages/Login'
 import Dashboard from './pages/Dashboard'
+import History from './pages/History'
+import Layout from './components/Layout' 
 
 function App() {
   const [user, setUser] = useState(null)
@@ -28,8 +30,11 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={!user ? <Login /> : <Navigate to="/dashboard" />} />
-        <Route path="/dashboard" element={user ? <Dashboard user={user} /> : <Navigate to="/" />} />
+        <Route element={<Layout />}>
+          <Route path="/" element={!user ? <Login /> : <Navigate to="/dashboard" />} />
+          <Route path="/dashboard" element={user ? <Dashboard user={user} /> : <Navigate to="/" />} />
+          <Route path="/history" element={user ? <History /> : <Navigate to="/" />} />
+        </Route>
       </Routes>
     </BrowserRouter>
   )
