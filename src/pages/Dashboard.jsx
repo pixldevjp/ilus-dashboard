@@ -1,4 +1,5 @@
 import Cred from './Cred'
+import { LogOut } from 'lucide-react'
 
 function Dashboard({ user }) {
 
@@ -36,7 +37,14 @@ function Dashboard({ user }) {
             <img src={user.avatar} className="w-8 h-8 rounded-full" alt="avatar" />
           )}
           <span className="text-gray-300 text-sm">{user?.name}</span>
-          <button onClick={handleLogout} className="text-gray-500 hover:text-red-400 text-sm transition-colors">Logout</button>
+          <button
+            onClick={handleLogout}
+            className="text-gray-500 hover:text-red-400 transition-colors"
+            aria-label="Logout"
+            title="Logout"
+          >
+            <LogOut className="w-5 h-5" />
+          </button>
         </div>
       </nav>
       <main className="p-6 max-w-6xl mx-auto">
