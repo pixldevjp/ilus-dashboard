@@ -1,4 +1,5 @@
 import Cred from './Cred'
+import Stats from './Stats' 
 import { LogOut } from 'lucide-react'
 
 function Dashboard({ user }) {
@@ -9,7 +10,7 @@ function Dashboard({ user }) {
       .find(row => row.startsWith('XSRF-TOKEN='))
       ?.split('=')[1]
 
-    fetch('https://ilus.app/logout', {
+    fetch('/logout', {
       method: 'POST',
       credentials: 'include',
       headers: {
@@ -50,11 +51,12 @@ function Dashboard({ user }) {
       <main className="p-6 max-w-6xl mx-auto">
         <div className="mb-6">
           <h2 className="text-2xl font-semibold text-white">Welcome, {user?.name}</h2>
-          <p className="text-gray-500 text-sm mt-1">Here is what is happening right now.</p>
+          <p className="text-gray-500 text-sm mt-1">Your recent activity and status.</p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 items-stretch">
           <Cred />
+          <Stats />
         </div>
       </main>
     </div>

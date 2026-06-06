@@ -8,7 +8,7 @@ function Login() {
         <p className="text-cyan-400 tracking-widest text-sm mt-2">Free Navy Star Citizen</p>
       </div>
       <a
-        href="https://ilus.app/auth/discord"
+        href="/auth/discord"
         className="bg-indigo-600 hover:bg-indigo-500 text-white font-semibold px-8 py-3 rounded-lg tracking-wide transition-colors"
       >
         Login with Discord

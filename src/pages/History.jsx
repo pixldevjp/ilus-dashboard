@@ -103,7 +103,7 @@ function History() {
 
     setLoading(true)
     setError(null)
-    fetch(`https://ilus.app/api/cred/history?${sp.toString()}`, { credentials: 'include' })
+    fetch(`/api/cred/history?${sp.toString()}`, { credentials: 'include' })
       .then(res => {
         if (!res.ok) throw new Error(`HTTP ${res.status}`)
         return res.json()

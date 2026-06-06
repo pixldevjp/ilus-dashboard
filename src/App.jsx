@@ -10,7 +10,7 @@ function App() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    fetch('https://ilus.app/api/user', {
+    fetch('/api/user', {
       credentials: 'include',
     })
       .then(res => res.ok ? res.json() : null)

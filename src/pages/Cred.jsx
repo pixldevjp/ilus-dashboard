@@ -34,7 +34,7 @@ function Cred() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    fetch('https://ilus.app/api/cred', { credentials: 'include' })
+    fetch('/api/cred', { credentials: 'include' })
       .then(res => {
         if (!res.ok) throw new Error(`HTTP ${res.status}`)
         return res.json()
