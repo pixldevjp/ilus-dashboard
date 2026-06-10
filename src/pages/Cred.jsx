@@ -1,13 +1,16 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 
-// Cred — a self-contained dashboard card showing the member's current point
-// balance, lifetime earned, and recent ledger activity for the org they are
-// viewing. Fetches its own data from /api/cred. Read-only.
+// Cred — the member's balance, lifetime earned, and recent credit MOVEMENT for
+// the org they are viewing. Fetches /api/cred. Read-only.
 //
-// Drops into Dashboard as <Cred />. Later this becomes the first tile of the
-// bird's-eye overview; the "View full history" link will route to a paged,
-// searchable ledger view (not yet built).
+// Recent activity is grouped: all ledger rows for one operation (its hourly
+// vc_sweep increments + the vc_op close settlement) collapse into a SINGLE
+// line showing the op's total, with an entry count in the meta. Movements that
+// are not part of an op — adjustments, spends, penalties, gifts, manual awards
+// (no op_ulid) — are first-class events and each stay their own line. The
+// grouping + N-event cap happen server-side, so each op line shows its FULL
+// total, not a partial sum of whatever rows fit a window.
 
 function formatWhen(value) {
   if (!value) return ''
@@ -16,15 +19,15 @@ function formatWhen(value) {
   return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })
 }
 
-// Map ledger entry types to a short human label + accent.
+// Map ledger entry types to a short human label.
 function typeLabel(type) {
   switch (type) {
-    case 'vc_op':       return 'Operation'
-    case 'vc_sweep':    return 'Op tracking'
-    case 'manual_award':return 'Award'
-    case 'spend':       return 'Spent'
-    case 'adjustment':  return 'Adjustment'
-    default:            return type || 'Entry'
+    case 'vc_op':        return 'Operation'
+    case 'vc_sweep':     return 'Op tracking'
+    case 'manual_award': return 'Award'
+    case 'spend':        return 'Spent'
+    case 'adjustment':   return 'Adjustment'
+    default:             return type || 'Entry'
   }
 }
 
@@ -74,7 +77,7 @@ function Cred() {
         {data.lifetime.toLocaleString()} earned all-time
       </div>
 
-      {/* Recent activity */}
+      {/* Recent activity — grouped events */}
       <div className="border-t border-gray-800 pt-4">
         <h4 className="text-gray-500 text-xs tracking-widest uppercase mb-3">Recent activity</h4>
 
@@ -82,24 +85,33 @@ function Cred() {
           <div className="text-gray-600 text-sm">No activity yet.</div>
         ) : (
           <ul className="space-y-2">
-            {data.entries.map(e => (
-              <li key={e.id} className="flex items-center justify-between text-sm">
-                <div className="min-w-0">
-                  <div className="text-gray-200 truncate">
-                    {e.op_name || e.reason || typeLabel(e.type)}
+            {data.entries.map(e => {
+              const isOp = Boolean(e.op_ulid)
+              const title = isOp
+                ? (e.op_name || 'Operation')
+                : (e.reason || typeLabel(e.type))
+              // Meta line: type label, date, and — for grouped ops — how many
+              // ledger rows were summed into this line.
+              const countNote = isOp && e.entry_count > 1
+                ? ` · ${e.entry_count} entries`
+                : ''
+              return (
+                <li key={e.id} className="flex items-center justify-between text-sm">
+                  <div className="min-w-0">
+                    <div className="text-gray-200 truncate">{title}</div>
+                    <div className="text-gray-600 text-xs">
+                      {typeLabel(e.type)} &middot; {formatWhen(e.created_at)}{countNote}
+                    </div>
                   </div>
-                  <div className="text-gray-600 text-xs">
-                    {typeLabel(e.type)} &middot; {formatWhen(e.created_at)}
-                  </div>
-                </div>
-                <span className={
-                  'tabular-nums font-medium ml-3 ' +
-                  (e.amount >= 0 ? 'text-cyan-400' : 'text-red-400')
-                }>
-                  {e.amount >= 0 ? '+' : ''}{e.amount.toLocaleString()}
-                </span>
-              </li>
-            ))}
+                  <span className={
+                    'tabular-nums font-medium ml-3 shrink-0 ' +
+                    (e.amount >= 0 ? 'text-cyan-400' : 'text-red-400')
+                  }>
+                    {e.amount >= 0 ? '+' : ''}{e.amount.toLocaleString()}
+                  </span>
+                </li>
+              )
+            })}
           </ul>
         )}
 
